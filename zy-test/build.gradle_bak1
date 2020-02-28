@@ -1,0 +1,87 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+plugins {
+    //id 'java'
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+
+}
+
+group 'org.springframework'
+version '5.2.4.BUILD-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+def cglibVersion = "3.3.0"
+def objenesisVersion = "3.1"
+def asmVersion = "7.3.1"
+
+configurations {
+    cglibConfig
+    objenesisConfig
+    asmConfig
+    asmCommonConfig
+}
+
+task asmJar(type: ShadowJar) {
+    baseName = 'zy-asm-repack'
+    version = asmVersion
+    configurations = [project.configurations.asmConfig,project.configurations.asmCommonConfig]
+    relocate 'org.objectweb.asm', 'com.gupao.asm'
+}
+
+task cglibRepackJar(type: ShadowJar) {
+    baseName = 'zy-cglib-repack'
+    version = cglibVersion
+    configurations = [project.configurations.cglibConfig] //print project.configurations.cglib    configuration ':zy-test:cglib'
+    relocate 'net.sf.cglib', 'com.gupao.cglib'
+    relocate 'org.objectweb.asm', 'com.gupao.asm'
+}
+
+task objenesisRepackJar(type: ShadowJar) {
+    baseName = 'zy-objenesis-repack'
+    version = objenesisVersion
+    configurations = [project.configurations.objenesisConfig]
+    relocate 'org.objenesis', 'com.gupao.objenesis'
+}
+
+dependencies {
+    cglibConfig("cglib:cglib:${cglibVersion}@jar")
+    objenesisConfig("org.objenesis:objenesis:${objenesisVersion}@jar")
+    asmConfig("org.ow2.asm:asm:${asmVersion}@jar")
+    asmCommonConfig("org.ow2.asm:asm-commons:${asmVersion}@jar")
+
+    compile("com.google.guava:guava:20.0")
+
+    compile(files(cglibRepackJar))
+    compile(files(objenesisRepackJar))
+    compile(files(asmJar))
+
+
+//    testCompile(project(":spring-beans"))
+//    testCompile(project(":spring-core"))
+
+}
+
+jar {
+    // Inline repackaged cglib classes directly into zy-test jar
+    dependsOn cglibRepackJar
+    from(zipTree(cglibRepackJar.archivePath)) {
+        include "com.gupao/cglib/**"
+        exclude "com.gupao/cglib/core/AbstractClassGenerator*.class"
+        exclude "com.gupao/cglib/core/AsmApi*.class"
+        exclude "com.gupao/cglib/core/KeyFactory.class"
+        exclude "com.gupao/cglib/core/KeyFactory\$*.class"
+        exclude "com.gupao/cglib/core/ReflectUtils*.class"
+        exclude "com.gupao/cglib/proxy/Enhancer*.class"
+        exclude "com.gupao/cglib/proxy/MethodProxy*.class"
+    }
+    dependsOn objenesisRepackJar
+    from(zipTree(objenesisRepackJar.archivePath)) {
+        include "com.gupao/objenesis/**"
+    }
+}
+
+
