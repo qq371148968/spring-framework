@@ -1,3 +1,7 @@
+
+
+
+
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
@@ -53,15 +57,24 @@ dependencies {
     asmConfig("org.ow2.asm:asm:${asmVersion}@jar")
     asmCommonConfig("org.ow2.asm:asm-commons:${asmVersion}@jar")
 
-//    dependency "com.google.guava:guava:20.0"
     compile("com.google.guava:guava:20.0")
 
     compile(files(cglibRepackJar))
     compile(files(objenesisRepackJar))
     compile(files(asmJar))
 
+    compile(project(":spring-beans"))
+    compile(project(":spring-core"))
+    compile(project(":spring-aop"))
+    compile(project(":spring-context"))
+    compile("org.aspectj:aspectjweaver")
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    testCompile(project(":spring-beans"))
+    testCompile(project(":spring-core"))
+    testCompile(project(":spring-aop"))
+    testCompile(project(":spring-context"))
+
 }
 
 jar {

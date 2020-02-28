@@ -539,6 +539,7 @@ public class ClassPathScanningCandidateComponentProviderTests {
 	@Component(DefaultAndDevProfileAnnotatedComponent.BEAN_NAME)
 	private static class DefaultAndDevProfileAnnotatedComponent {
 		static final String BEAN_NAME = "defaultAndDevProfileAnnotatedComponent";
+		private int a=100;
 	}
 
 	@DefaultProfile @DevProfile

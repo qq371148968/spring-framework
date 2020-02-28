@@ -61,6 +61,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class ContextLoaderTests {
 
 	@Test
+	public void testZy(){
+		System.out.println("test");
+	}
+
+	@Test
 	public void testContextLoaderListenerWithDefaultContext() {
 		MockServletContext sc = new MockServletContext("");
 		sc.addInitParameter(ContextLoader.CONFIG_LOCATION_PARAM,
